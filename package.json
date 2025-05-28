@@ -1,0 +1,36 @@
+{
+  "name": "school-chatbot-frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "backend": "cd \"../langchain-llama-chatbot backend\" && call llama-env\\Scripts\\activate && uvicorn main:app --reload",
+    "start-all": "concurrently \"npm run dev\" \"npm run backend\""
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.22.0",
+    "@types/firebase": "^2.4.32",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.1.2",
+    "eslint": "^9.22.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.0.0",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.26.1",
+    "vite": "^6.3.1"
+  },
+  "dependencies": {
+    "firebase": "^11.7.3",
+    "lucide-react": "^0.510.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-linkify": "^1.0.0-alpha"
+  }
+}

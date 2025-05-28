@@ -1,0 +1,19 @@
+:root {
+  --background: #f5f7fa;
+  --text: #1b1b1b;
+  --heading: #1b3b6f;
+  --subtext: #333;
+}
+
+[data-theme="dark"] {
+  --background: #1a1a1a;
+  --text: #f1f1f1;
+  --heading: #9ecbff;
+  --subtext: #aaa;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--text);
+  transition: background 0.3s ease, color 0.3s ease;
+}
