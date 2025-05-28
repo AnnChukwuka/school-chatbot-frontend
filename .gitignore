@@ -7,12 +7,41 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
+# Runtime and debug
+*.pid
+*.seed
+*.pid.lock
+report.*.json
+
+# Diagnostic
+.nyc_output
+coverage
+*.lcov
+
+# Output
 dist
 dist-ssr
-*.local
+build
+out
 
-# Editor directories and files
+# Cache
+.cache
+.parcel-cache
+.vitepress
+.vitepress/cache
+.vuepress/dist
+.vuepress/.temp
+
+# Node/npm
+node_modules/
+jspm_packages/
+bower_components/
+.pnpm-debug.log*
+.npm
+*.tgz
+.yarn-integrity
+
+# Editor settings
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -22,4 +51,26 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment files
+.env
+.env.*.local
 firebase_key.json
+
+# Misc tools
+.eslintcache
+.stylelintcache
+.rpt2_cache/
+.rts2_cache_*/
+.serverless/
+.fusebox/
+.dynamodb/
+.tern-port
+.vscode-test
+
+# Others
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
