@@ -1,5 +1,5 @@
 // src/components/FloatingChat.tsx
-import React, { useState } from "react";
+import { useState } from "react";
 import Chatbot from "./Chatbot";
 import { MessageCircle } from "lucide-react";
 
