@@ -24,7 +24,6 @@ const Chatbot: React.FC = () => {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
   const sessionId = useRef<string>("");
 
   useEffect(() => {
@@ -71,8 +70,7 @@ const Chatbot: React.FC = () => {
 
     if (WELCOME_TRIGGER.includes(lower)) {
       setTimeout(async () => {
-        const text =
-          "Hi! I'm Azalea – Your Campus Guide! 🌸";
+        const text = "Hi! I'm Azalea – Your Campus Guide! 🌸";
         const botMessage: ChatMessage = { sender: "bot", text };
         setMessages((prev) => [...prev, botMessage]);
         await saveChatMessage(sessionId.current, text, "bot");
@@ -82,10 +80,14 @@ const Chatbot: React.FC = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:8000/chat", {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: trimmed }),
+        body: JSON.stringify({
+          message: trimmed,
+          session_id: sessionId.current,
+          log_to_firebase: true,
+        }),
       });
 
       const data = await response.json();
@@ -120,7 +122,7 @@ const Chatbot: React.FC = () => {
           <div key={index} className={`chat-message ${msg.sender}`}>
             {msg.sender === "user" ? <User size={18} /> : <Bot size={18} />}
             <div className="message-text">
-            <Linkify>{msg.text}</Linkify> 
+              <Linkify>{msg.text}</Linkify>
             </div>
           </div>
         ))}
