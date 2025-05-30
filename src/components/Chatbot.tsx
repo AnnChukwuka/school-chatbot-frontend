@@ -95,7 +95,9 @@ const Chatbot: React.FC = () => {
     try {
       await fetch(`${import.meta.env.VITE_API_BASE_URL}/chat/clear`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json",
+                    "x-api-key": import.meta.env.VITE_API_KEY,
+         },
         body: JSON.stringify({ session_id: sessionId.current }),
       });
       setMessages([]);
