@@ -1,17 +1,11 @@
+// src/components/Chatbot.tsx
+
 import React, { useState, useRef, useEffect } from "react";
 import Linkify from "react-linkify";
 import "./Chatbot.css";
 import { User, Bot } from "lucide-react";
-import { saveChatMessage } from "../utils/saveChatMessage";
-import { clearChatSession } from "../utils/clearChatSession";
-import {
-  getDocs,
-  collection,
-  orderBy,
-  query,
-} from "firebase/firestore";
-import { db } from "../firebase";
 
+// Message Type
 type ChatMessage = {
   sender: "user" | "bot";
   text: string;
@@ -31,21 +25,19 @@ const Chatbot: React.FC = () => {
     const generated = existing || crypto.randomUUID();
     localStorage.setItem("chatSessionId", generated);
     sessionId.current = generated;
-  }, []);
 
-  useEffect(() => {
-    const loadMessages = async () => {
-      const ref = collection(db, "chats", sessionId.current, "messages");
-      const q = query(ref, orderBy("timestamp"));
-      const snapshot = await getDocs(q);
-      const history = snapshot.docs.map((doc) => ({
-        sender: doc.data().sender,
-        text: doc.data().text,
-      }));
-      setMessages(history as ChatMessage[]);
+    // Load chat history
+    const loadHistory = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/chat/history?session_id=${generated}`);
+        const data = await response.json();
+        setMessages(data.history);
+      } catch (error) {
+        console.error("Failed to load chat history", error);
+      }
     };
 
-    loadMessages();
+    loadHistory();
   }, []);
 
   const scrollToBottom = () => {
@@ -66,14 +58,11 @@ const Chatbot: React.FC = () => {
     setInput("");
     setLoading(true);
 
-    await saveChatMessage(sessionId.current, trimmed, "user");
-
     if (WELCOME_TRIGGER.includes(lower)) {
-      setTimeout(async () => {
+      setTimeout(() => {
         const text = "Hi! I'm Azalea – Your Campus Guide! 🌸";
         const botMessage: ChatMessage = { sender: "bot", text };
         setMessages((prev) => [...prev, botMessage]);
-        await saveChatMessage(sessionId.current, text, "bot");
         setLoading(false);
       }, 1000);
       return;
@@ -93,20 +82,26 @@ const Chatbot: React.FC = () => {
       const data = await response.json();
       const botMessage: ChatMessage = { sender: "bot", text: data.answer };
       setMessages((prev) => [...prev, botMessage]);
-      await saveChatMessage(sessionId.current, data.answer, "bot");
     } catch (err) {
       console.error("❌ API call failed:", err);
       const failText = "Sorry, there was an error contacting the server.";
       setMessages((prev) => [...prev, { sender: "bot", text: failText }]);
-      await saveChatMessage(sessionId.current, failText, "bot");
     } finally {
       setLoading(false);
     }
   };
 
   const handleClearChat = async () => {
-    await clearChatSession(sessionId.current);
-    setMessages([]);
+    try {
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/chat/clear`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ session_id: sessionId.current }),
+      });
+      setMessages([]);
+    } catch (error) {
+      console.error("Failed to clear chat", error);
+    }
   };
 
   return (
