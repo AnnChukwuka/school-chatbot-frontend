@@ -1,11 +1,8 @@
-// src/components/Chatbot.tsx
-
 import React, { useState, useRef, useEffect } from "react";
 import Linkify from "react-linkify";
 import "./Chatbot.css";
 import { User, Bot } from "lucide-react";
 
-// Message Type
 type ChatMessage = {
   sender: "user" | "bot";
   text: string;
@@ -29,7 +26,17 @@ const Chatbot: React.FC = () => {
     // Load chat history
     const loadHistory = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/chat/history?session_id=${generated}`);
+        const response = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/chat/history?session_id=${generated}`,
+          {
+            headers: {
+              "x-api-key": import.meta.env.VITE_API_KEY,
+            },
+          }
+        );
+        if (!response.ok) {
+          throw new Error(`Server error: ${response.status}`);
+        }
         const data = await response.json();
         setMessages(data.history);
       } catch (error) {
@@ -71,13 +78,20 @@ const Chatbot: React.FC = () => {
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/chat`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": import.meta.env.VITE_API_KEY,
+        },
         body: JSON.stringify({
           message: trimmed,
           session_id: sessionId.current,
           log_to_firebase: true,
         }),
       });
+
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status}`);
+      }
 
       const data = await response.json();
       const botMessage: ChatMessage = { sender: "bot", text: data.answer };
@@ -93,13 +107,19 @@ const Chatbot: React.FC = () => {
 
   const handleClearChat = async () => {
     try {
-      await fetch(`${import.meta.env.VITE_API_BASE_URL}/chat/clear`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/chat/clear`, {
         method: "POST",
-        headers: { "Content-Type": "application/json",
-                    "x-api-key": import.meta.env.VITE_API_KEY,
-         },
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": import.meta.env.VITE_API_KEY,
+        },
         body: JSON.stringify({ session_id: sessionId.current }),
       });
+
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status}`);
+      }
+
       setMessages([]);
     } catch (error) {
       console.error("Failed to clear chat", error);
