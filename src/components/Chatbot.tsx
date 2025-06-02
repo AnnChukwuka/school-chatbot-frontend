@@ -6,6 +6,7 @@ import { User, Bot } from "lucide-react";
 type ChatMessage = {
   sender: "user" | "bot";
   text: string;
+  image?: string; // Image URL (Optional)
 };
 
 const WELCOME_TRIGGER = ["hi", "hello", "hey"];
@@ -23,7 +24,6 @@ const Chatbot: React.FC = () => {
     localStorage.setItem("chatSessionId", generatedSessionId);
     sessionId.current = generatedSessionId;
 
-    // Load chat history from localStorage first
     const localMessages = localStorage.getItem("chatMessages");
     if (localMessages) {
       setMessages(JSON.parse(localMessages));
@@ -81,7 +81,11 @@ const Chatbot: React.FC = () => {
       }
 
       const data = await response.json();
-      const botMessage: ChatMessage = { sender: "bot", text: data.answer };
+      const botMessage: ChatMessage = {
+        sender: "bot",
+        text: data.answer,
+        image: data.image, // ⚡️ New: Attach image URL
+      };
       setMessages((prev) => [...prev, botMessage]);
     } catch (err) {
       console.error("❌ API call failed:", err);
@@ -93,7 +97,6 @@ const Chatbot: React.FC = () => {
   };
 
   const handleClearChat = () => {
-    // Clear only from frontend (browser localStorage)
     localStorage.removeItem("chatMessages");
     setMessages([]);
   };
@@ -112,6 +115,19 @@ const Chatbot: React.FC = () => {
             {msg.sender === "user" ? <User size={18} /> : <Bot size={18} />}
             <div className="message-text">
               <Linkify>{msg.text}</Linkify>
+              {/* 📸 Show Image if it exists */}
+              {msg.image && (
+              <div style={{ marginTop: "10px" }}>
+                <img
+                  src={msg.image}
+                  alt="Chat Image"
+                  style={{ maxWidth: "100%", borderRadius: "10px" }}
+                  onError={(e) => {
+                    e.currentTarget.src = "https://via.placeholder.com/300x200?text=Image+Not+Available"; // Fallback image
+                  }}
+                />
+              </div>
+            )}
             </div>
           </div>
         ))}
