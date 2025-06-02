@@ -18,34 +18,21 @@ const Chatbot: React.FC = () => {
   const sessionId = useRef<string>("");
 
   useEffect(() => {
-    const existing = localStorage.getItem("chatSessionId");
-    const generated = existing || crypto.randomUUID();
-    localStorage.setItem("chatSessionId", generated);
-    sessionId.current = generated;
+    const existingSessionId = localStorage.getItem("chatSessionId");
+    const generatedSessionId = existingSessionId || crypto.randomUUID();
+    localStorage.setItem("chatSessionId", generatedSessionId);
+    sessionId.current = generatedSessionId;
 
-    // Load chat history
-    const loadHistory = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL}/chat/history?session_id=${generated}`,
-          {
-            headers: {
-              "x-api-key": import.meta.env.VITE_API_KEY,
-            },
-          }
-        );
-        if (!response.ok) {
-          throw new Error(`Server error: ${response.status}`);
-        }
-        const data = await response.json();
-        setMessages(data.history);
-      } catch (error) {
-        console.error("Failed to load chat history", error);
-      }
-    };
-
-    loadHistory();
+    // Load chat history from localStorage first
+    const localMessages = localStorage.getItem("chatMessages");
+    if (localMessages) {
+      setMessages(JSON.parse(localMessages));
+    }
   }, []);
+
+  const saveMessagesToLocalStorage = (messages: ChatMessage[]) => {
+    localStorage.setItem("chatMessages", JSON.stringify(messages));
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -53,21 +40,21 @@ const Chatbot: React.FC = () => {
 
   useEffect(() => {
     scrollToBottom();
+    saveMessagesToLocalStorage(messages);
   }, [messages]);
 
   const handleSend = async () => {
     const trimmed = input.trim();
     if (!trimmed) return;
 
-    const lower = trimmed.toLowerCase();
     const userMessage: ChatMessage = { sender: "user", text: trimmed };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setLoading(true);
 
-    if (WELCOME_TRIGGER.includes(lower)) {
+    if (WELCOME_TRIGGER.includes(trimmed.toLowerCase())) {
       setTimeout(() => {
-        const text = "Hi! I'm Azalea – Your Campus Guide! 🌸";
+        const text = "Hi! I'm Azalea – Your Campus Guide! 🌸 ";
         const botMessage: ChatMessage = { sender: "bot", text };
         setMessages((prev) => [...prev, botMessage]);
         setLoading(false);
@@ -105,25 +92,10 @@ const Chatbot: React.FC = () => {
     }
   };
 
-  const handleClearChat = async () => {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/chat/clear`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": import.meta.env.VITE_API_KEY,
-        },
-        body: JSON.stringify({ session_id: sessionId.current }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Server error: ${response.status}`);
-      }
-
-      setMessages([]);
-    } catch (error) {
-      console.error("Failed to clear chat", error);
-    }
+  const handleClearChat = () => {
+    // Clear only from frontend (browser localStorage)
+    localStorage.removeItem("chatMessages");
+    setMessages([]);
   };
 
   return (
