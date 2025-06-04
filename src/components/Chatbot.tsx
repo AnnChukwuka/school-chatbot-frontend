@@ -54,7 +54,7 @@ const Chatbot: React.FC = () => {
 
     if (WELCOME_TRIGGER.includes(trimmed.toLowerCase())) {
       setTimeout(() => {
-        const text = "Hi! I'm Azalea – Your Campus Guide! 🌸 ";
+        const text = "Hi!";
         const botMessage: ChatMessage = { sender: "bot", text };
         setMessages((prev) => [...prev, botMessage]);
         setLoading(false);
@@ -84,7 +84,7 @@ const Chatbot: React.FC = () => {
       const botMessage: ChatMessage = {
         sender: "bot",
         text: data.answer,
-        image: data.image, // ⚡️ New: Attach image URL
+        image: data.image, // Attach image URL
       };
       setMessages((prev) => [...prev, botMessage]);
     } catch (err) {
@@ -146,7 +146,7 @@ const Chatbot: React.FC = () => {
       <div className="chatbot-input">
         <input
           type="text"
-          placeholder="Ask Azalea anything..."
+          placeholder="type..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && !loading && handleSend()}

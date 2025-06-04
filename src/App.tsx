@@ -20,7 +20,7 @@ function App() {
         Welcome to BAU 🎓
       </h1>
       <p style={{ textAlign: "center", color: "var(--subtext)" }}>
-        I'm Azalea 🌸 Your Campus & Study Guide! I'm here to assist with everything from academic queries to navigating campus life. Need help with assignments, school policies, or directions? Azalea has the answers to make your school experience smoother!🌿✨
+        I'm Azalea 🌸 Your Campus & Study Guide! I'm here to assist with everything from academic queries to navigating campus life. Need with school policies, or directions? Azalea has the answers to make your school experience smoother!🌿✨
       </p>
       <FloatingChat />
     </div>
