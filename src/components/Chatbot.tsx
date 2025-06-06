@@ -83,7 +83,7 @@ const Chatbot: React.FC = () => {
       const data = await response.json();
       const botMessage: ChatMessage = {
         sender: "bot",
-        text: data.answer,
+        text: data.text,
         image: data.image, // Attach image URL
       };
       setMessages((prev) => [...prev, botMessage]);
@@ -102,7 +102,7 @@ const Chatbot: React.FC = () => {
   };
 
   return (
-    <div className="chatbot-wrapper">
+    <div className="chatbot-wrapper" style={{width:"fit"}}>
       <header className="chatbot-header">Azalea 🌸</header>
       <div style={{ textAlign: "right", padding: "0.5rem 1rem" }}>
         <button onClick={handleClearChat} style={{ fontSize: "0.9rem" }}>

@@ -10,7 +10,7 @@ function App() {
   }, [dark]);
 
   return (
-    <div className="App">
+    <div className="App" style={{padding: "0px 20px"}}>
       <div style={{ textAlign: "right", padding: "1rem" }}>
         <button onClick={() => setDark(!dark)}>
           {dark ? "☀️ Light Mode" : "🌙 Dark Mode"}
